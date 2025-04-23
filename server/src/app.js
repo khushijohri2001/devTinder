@@ -19,7 +19,7 @@ app.post("/signup", async (req, res) => {
     await user.save();
     res.send("User created!");
   } catch (err) {
-    res.status(400).send("Error while saving the user!");
+    res.status(400).send("Error while saving the user!", err);
   }
 });
 
@@ -97,7 +97,7 @@ app.patch("/user", async (req, res) => {
     const newUserData = req.body;
   
     try {
-      const user = await User.updateOne({email: userEmail}, newUserData);
+      const user = await User.updateOne({email: userEmail}, newUserData, {runValidators: true});
       console.log(user);
   
       if (!user) {
