@@ -1,10 +1,12 @@
 const express = require("express");
-
 const cors = require("cors");
+const bcrypt = require("bcrypt");
+
+const User = require("./models/user");
 
 const { adminAuth } = require("./middleware/auth");
 const { connectDB } = require("./config/database");
-const User = require("./models/user");
+const { validateSignupData, validateLoginData } = require("./utils/validation");
 
 const app = express();
 
@@ -13,15 +15,57 @@ app.use(express.json());
 
 // POST - Creating new User
 app.post("/signup", async (req, res) => {
-  const user = new User(req.body);
-
   try {
+    //Validation
+    validateSignupData(req);
+
+    //Encryption
+    const { firstName, lastName, email, password, age, gender } = req.body;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      age,
+      gender,
+    });
+
     await user.save();
     res.send("User created!");
   } catch (err) {
-    res.status(400).send("Error while saving the user!", err);
+    res.status(400).send({ message: err.message || "Something went wrong" });
   }
 });
+
+// POST - Login user
+app.post('/login', async(req, res) => {
+    try{
+        const {email, password} = req.body;
+
+        validateLoginData(req)
+
+        const existingUser = await User.findOne({email: email});
+
+        if(!existingUser){
+            throw new Error('User not found')
+        }
+        
+        const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+        
+        if(isPasswordValid){
+            res.send("Login Successful")
+        } else{
+            throw new Error("Invalid Creds!")
+        }
+        
+
+    } catch(err){
+        res.status(400).send({message: err.message || "Something went wrong"})
+    }
+})
 
 // GET - Specific User data
 app.get("/user", async (req, res) => {
@@ -72,43 +116,52 @@ app.delete("/user", async (req, res) => {
 });
 
 //  PATCH - Update User data by Id
-// app.patch("/user", async (req, res) => {
-//   const userId = req.body.userId;
-//   const newUserData = req.body;
+app.patch("/user", async (req, res) => {
+  const userId = req.body.userId;
+  const newUserData = req.body;
 
-//   try {
-//     const user = await User.findByIdAndUpdate(userId, newUserData);
-//     console.log(user);
+  try {
+    const ALLOWED_ACCESS = ["userId", "firstName", "lastName", "age", "gender"];
+    const isUpdateAllowed = Object.keys(newUserData).every((key) =>
+      ALLOWED_ACCESS.includes(key)
+    );
 
-//     if (!user) {
-//       res.status(404).send("User not found");
-//     } else {
-//       res.send("User updated successfully!");
-//     }
-//   } catch (err) {
-//     res.status(400).send("Something went wrong");
-//   }
-// });
+    if (!isUpdateAllowed) {
+      throw new Error("Cannot update data. Invalid Field!");
+    }
 
+    const user = await User.findByIdAndUpdate(userId, newUserData);
+    console.log(user);
+
+    if (!user) {
+      res.status(404).send("User not found");
+    } else {
+      res.send("User updated successfully!");
+    }
+  } catch (err) {
+    res.status(400).send("Something went wrong" + err);
+  }
+});
 
 //  PATCH - Update User data by email
-app.patch("/user", async (req, res) => {
-    const userEmail = req.body.email;
-    const newUserData = req.body;
-  
-    try {
-      const user = await User.updateOne({email: userEmail}, newUserData, {runValidators: true});
-      console.log(user);
-  
-      if (!user) {
-        res.status(404).send("User not found");
-      } else {
-        res.send("User updated successfully!");
-      }
-    } catch (err) {
-      res.status(400).send("Something went wrong");
-    }
-  });
+// app.patch("/user", async (req, res) => {
+//     const userEmail = req.body.email;
+//     const newUserData = req.body;
+
+//     try {
+
+//       const user = await User.updateOne({email: userEmail}, newUserData, {runValidators: true});
+//       console.log(user);
+
+//       if (!user) {
+//         res.status(404).send("User not found");
+//       } else {
+//         res.send("User updated successfully!");
+//       }
+//     } catch (err) {
+//       res.status(400).send("Something went wrong "+ err);
+//     }
+//   });
 
 connectDB()
   .then(() => {
