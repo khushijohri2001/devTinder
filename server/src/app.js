@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const User = require("./models/user");
 
@@ -12,6 +14,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 // POST - Creating new User
 app.post("/signup", async (req, res) => {
@@ -45,6 +48,7 @@ app.post('/login', async(req, res) => {
     try{
         const {email, password} = req.body;
 
+        // Validating data
         validateLoginData(req)
 
         const existingUser = await User.findOne({email: email});
@@ -53,9 +57,15 @@ app.post('/login', async(req, res) => {
             throw new Error('User not found')
         }
         
+        // Checking text password and hash password
         const isPasswordValid = await bcrypt.compare(password, existingUser.password);
         
         if(isPasswordValid){
+          // generate token
+            
+            const token = await jwt.sign({_id: existingUser._id}, "DEVTINDER@2001");
+
+            res.cookie("token", token);
             res.send("Login Successful")
         } else{
             throw new Error("Invalid Creds!")
@@ -68,38 +78,52 @@ app.post('/login', async(req, res) => {
 })
 
 // GET - Specific User data
-app.get("/user", async (req, res) => {
-  const userEmail = req.body.email;
-
+app.get("/profile", async (req, res) => {
   try {
-    const user = await User.findOne({ email: userEmail });
+    const cookies = req.cookies;
+    const {token} = cookies;
 
-    if (!user) {
-      res.status(404).send("User not found");
-    } else {
-      res.send(user, "User found!");
+    if(!token){
+      throw new Error("Invalid Token");
     }
+
+    // decode jwt token
+    const decodedMessage = await jwt.verify(token, "DEVTINDER@2001");
+    
+    const {_id} = decodedMessage;
+
+    const user = await User.findById(_id);
+    
+
+    if(!user){
+      throw new Error("User not found!")
+    } else{
+      res.send({user: user, message: "User found Successfully"})
+    }
+    
+    
+
   } catch (err) {
     res.status(400).send("Something went wrong");
   }
 });
 
 // GET - All Users data
-// app.get('/user', async(req, res) => {
-//     // const userEmail = req.body.email;
+app.get('/user', async(req, res) => {
+    // const userEmail = req.body.email;
 
-//     try{
-//         const users = await User.find({});
+    try{
+        const users = await User.find({});
 
-//         if(!users){
-//             res.status(404).send("User not found")
-//         } else{
-//             res.send(users, "User found!")
-//         }
-//     }catch(err){
-//         res.status(400).send("Something went wrong")
-//     }
-// })
+        if(!users){
+            res.status(404).send("User not found")
+        } else{
+            res.send(users, "User found!")
+        }
+    }catch(err){
+        res.status(400).send("Something went wrong")
+    }
+})
 
 //  DELETE - Remove User by id
 app.delete("/user", async (req, res) => {
