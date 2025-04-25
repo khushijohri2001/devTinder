@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("./models/user");
 
-const { adminAuth } = require("./middleware/auth");
+const { adminAuth, userAuth } = require("./middleware/auth");
 const { connectDB } = require("./config/database");
 const { validateSignupData, validateLoginData } = require("./utils/validation");
 
@@ -73,38 +73,19 @@ app.post('/login', async(req, res) => {
         
 
     } catch(err){
-        res.status(400).send({message: err.message || "Something went wrong"})
+        res.status(400).send({ message: err.message || "Something went wrong" })
     }
 })
 
 // GET - Specific User data
-app.get("/profile", async (req, res) => {
+app.get("/profile", userAuth, async (req, res) => {
   try {
-    const cookies = req.cookies;
-    const {token} = cookies;
-
-    if(!token){
-      throw new Error("Invalid Token");
-    }
-
-    // decode jwt token
-    const decodedMessage = await jwt.verify(token, "DEVTINDER@2001");
-    
-    const {_id} = decodedMessage;
-
-    const user = await User.findById(_id);
-    
-
-    if(!user){
-      throw new Error("User not found!")
-    } else{
+   const {user} = req;
       res.send({user: user, message: "User found Successfully"})
-    }
-    
     
 
   } catch (err) {
-    res.status(400).send("Something went wrong");
+    res.status(400).send({ message: err.message || "Something went wrong" });
   }
 });
 
