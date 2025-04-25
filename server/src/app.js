@@ -63,14 +63,14 @@ app.post('/login', async(req, res) => {
         if(isPasswordValid){
           // generate token
             
-            const token = await jwt.sign({_id: existingUser._id}, "DEVTINDER@2001");
+            const token = await jwt.sign({_id: existingUser._id}, "DEVTINDER@2001", {expiresIn: "1d"});
 
-            res.cookie("token", token);
-            res.send("Login Successful")
+            res.cookie("token", token, {expires: new Date(Date.now() + 8 * 3600000)});
+
+            res.send("Login Successful");
         } else{
             throw new Error("Invalid Creds!")
         }
-        
 
     } catch(err){
         res.status(400).send({ message: err.message || "Something went wrong" })
