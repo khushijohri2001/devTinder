@@ -58,16 +58,16 @@ app.post('/login', async(req, res) => {
         }
         
         // Checking text password and hash password
-        const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+        const isPasswordValid = await existingUser.passwordValidation(password);
         
         if(isPasswordValid){
           // generate token
-            
-            const token = await jwt.sign({_id: existingUser._id}, "DEVTINDER@2001", {expiresIn: "1d"});
+            const token = await existingUser.getJWT()
 
             res.cookie("token", token, {expires: new Date(Date.now() + 8 * 3600000)});
 
             res.send("Login Successful");
+        
         } else{
             throw new Error("Invalid Creds!")
         }
