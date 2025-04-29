@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt')
 const User = require("../models/user");
 
 const { userAuth } = require("../middleware/auth");
-const { validateProfileEditData, validateLoginData } = require("../utils/validation")
+const { validateProfileEditData, validatePasswordResetData } = require("../utils/validation")
 
 
 // GET /profile/view - Specific User data
@@ -56,16 +56,19 @@ try{
 //  PATCH /profile/reset-password - Update User data by Id
 profileRouter.patch("/profile/reset-password", userAuth, async (req, res) => {
   try{
-    if (!validateLoginData(req)) {
-      throw new Error("Enter a valid Password");
+    
+    if (!validatePasswordResetData(req)) {
+      throw new Error("Enter a valid Data");
     }
   // current user data
     const loggedInUser = req.user;
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
 
     loggedInUser.password = hashedPassword
   
     await loggedInUser.save();
+
+    res.cookie("token", null, { expires: new Date(Date.now())})
   
     res.send({data: loggedInUser, message: loggedInUser.firstName + "'s password reset successfully!"});
   
