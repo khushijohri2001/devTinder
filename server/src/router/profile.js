@@ -1,11 +1,15 @@
 const express = require("express");
 const profileRouter = express.Router();
-const { userAuth } = require("../middleware/auth");
+const bcrypt = require('bcrypt')
+
 const User = require("../models/user");
 
+const { userAuth } = require("../middleware/auth");
+const { validateProfileEditData, validateLoginData } = require("../utils/validation")
 
-// GET - Specific User data
-profileRouter.get("/profile", userAuth, async (req, res) => {
+
+// GET /profile/view - Specific User data
+profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
      const {user} = req;
         res.send({user: user, message: "User found Successfully"})
@@ -16,8 +20,8 @@ profileRouter.get("/profile", userAuth, async (req, res) => {
     }
   });
 
-//  DELETE - Remove User by id
-profileRouter.delete("/user", async (req, res) => {
+//  DELETE /profile/remove - Remove User by id
+profileRouter.delete("/profile/remove", userAuth, async (req, res) => {
   const userId = req.body.userId;
 
   try {
@@ -30,32 +34,44 @@ profileRouter.delete("/user", async (req, res) => {
   }
 });
 
-//  PATCH - Update User data by Id
-profileRouter.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
-  const newUserData = req.body;
+//  PATCH /profile/edit - Update User data by Id
+profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
+try{
+  if (!validateProfileEditData(req)) {
+    throw new Error("Cannot update data. Invalid Field!");
+  }
 
-  try {
-    const ALLOWED_ACCESS = ["userId", "firstName", "lastName", "age", "gender"];
-    const isUpdateAllowed = Object.keys(newUserData).every((key) =>
-      ALLOWED_ACCESS.includes(key)
-    );
+  const loggedInUser = req.user;
+  Object.keys(req.body).forEach((key) => loggedInUser[key] = req.body[key])
 
-    if (!isUpdateAllowed) {
-      throw new Error("Cannot update data. Invalid Field!");
-    }
+  await loggedInUser.save();
 
-    const user = await User.findByIdAndUpdate(userId, newUserData);
-    console.log(user);
+  res.send({data: loggedInUser, message: loggedInUser.firstName + "'s profile updated successfully!"});
 
-    if (!user) {
-      res.status(404).send("User not found");
-    } else {
-      res.send("User updated successfully!");
-    }
   } catch (err) {
     res.status(400).send("Something went wrong" + err);
   }
 });
+
+//  PATCH /profile/reset-password - Update User data by Id
+profileRouter.patch("/profile/reset-password", userAuth, async (req, res) => {
+  try{
+    if (!validateLoginData(req)) {
+      throw new Error("Enter a valid Password");
+    }
+  // current user data
+    const loggedInUser = req.user;
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+    loggedInUser.password = hashedPassword
+  
+    await loggedInUser.save();
+  
+    res.send({data: loggedInUser, message: loggedInUser.firstName + "'s password reset successfully!"});
+  
+    } catch (err) {
+      res.status(400).send("Something went wrong" + err);
+    }
+  });
 
 module.exports = profileRouter;

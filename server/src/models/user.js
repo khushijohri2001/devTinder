@@ -46,6 +46,15 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    about: {
+        type: String,
+    },
+    skills: {
+        type: [String],
+    },
+    photoUrl: {
+        type: String
+    }
 }, {timestamps: true});
 
 userSchema.methods.getJWT = async function(){

@@ -4,7 +4,7 @@ const { validateSignupData, validateLoginData } = require("../utils/validation")
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
-// POST - Creating new User
+// POST /signup - Creating new User
 authRouter.post("/signup", async (req, res) => {
     try {
       //Validation
@@ -31,7 +31,7 @@ authRouter.post("/signup", async (req, res) => {
     }
   });
 
-  // POST - Login user
+  // POST /login - Login user
   authRouter.post('/login', async(req, res) => {
       try{
           const {email, password} = req.body;
@@ -64,5 +64,13 @@ authRouter.post("/signup", async (req, res) => {
           res.status(400).send({ message: err.message || "Something went wrong" })
       }
   })
+
+
+   // POST /logout - Logout user
+   authRouter.post('/logout', async(req, res) => {
+    res.cookie("token", null, { expires : new Date(Date.now())});
+
+    res.send("Logout successful")
+})
 
   module.exports = authRouter

@@ -1,16 +1,15 @@
 # devTinder
 
 ### authRouter
-- POST /signup
-- POST /login
-- POST /logout
+- POST /signup ✅
+- POST /login ✅
+- POST /logout ✅
 
 ### profileRouter
-- POST /profile/create
-- PATCH /profile/edit
-- GET /profile/view
-- DELETE /profile/remove
-- PATCH /profile/password
+- PATCH /profile/edit ✅
+- GET /profile/view ✅
+- DELETE /profile/remove ✅
+- PATCH /profile/password ✅
 
 ### connectionRequestRouter
 - POST /request/send/interested/:userId
