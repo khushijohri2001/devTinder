@@ -12,16 +12,16 @@
 - PATCH /profile/password ✅
 
 ### connectionRequestRouter
-- POST /request/send/interested/:userId
-- POST /request/send/ignored/:userId
+- POST /request/send/:status/:userId  (interested or ignored) ✅
 - PATCH /request/send/edit/:userId
-- POST /request/receive/accepted/:userId
-- POST /request/receive/rejected/:userId
-- PATCH /request/receive/remove/:userId
+
+- POST /request/review/:status/:userId  (accepted or rejected) ✅
+- PATCH /request/review/remove/:userId
 
 
 ### userRouter
+- GET /user/connections
+- GET /user/requests/received
 - GET /user/feed
 - GET explore/category
-- GET /user/connections
-- GET /user/requests/recieved
+
