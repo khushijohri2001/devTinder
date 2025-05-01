@@ -5,11 +5,12 @@ const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 const { userAuth} = require("../middleware/auth")
 
+// For Sender - ME
 requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
     try{
-        const fromUserId = req.user._id;
-        const toUserId = req.params.toUserId;
-        const status = req.params.status;
+        
+        const fromUserId = req.user._id; //loggedIn User
+        const {status, toUserId }= req.params
 
         //initially only these 2
         const ALLOWED_ACCESS = ["interested", "ignored"];
@@ -50,6 +51,49 @@ requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res)
         })
     } catch(err){
         res.status(400).send("Error: "+ err.message)
+    }
+})
+
+// For Reciever - Elon, or connection request coming to ME
+requestRouter.post("/request/review/:status/:fromUserId", userAuth, async (req, res) => {
+    try{
+        const loggedInUser = req.user; // loggedIn User, toUserId
+        const {status, fromUserId} = req.params; //coming from url
+    
+        // status can be accepted, rejected only
+        const ALLOWED_ACCESS = ["accepted", "rejected"];
+        if(!ALLOWED_ACCESS.includes(status)){
+            throw new Error("Invalid Status")
+        }
+
+        // from -> to connect request already existed with interested
+        const existingConnectionRequest = await ConnectionRequest.findOne({fromUserId: fromUserId, toUserId: loggedInUser._id, status: "interested"});
+
+        console.log(existingConnectionRequest);
+        
+
+        if(!existingConnectionRequest){
+           return res.status(404).send("Connection Request not found")
+        }
+
+        // in connected request toUserId must be the current logged in user
+        if(!existingConnectionRequest.toUserId.equals(loggedInUser._id)){
+            throw new Error("Invalid user")
+        }
+
+        // update status
+        existingConnectionRequest.status = status;
+
+        const data = await existingConnectionRequest.save()
+
+        res.json({
+            message: "Connection "+ status ,
+            data
+        })
+        
+
+    } catch(err){
+        res.status(400).send({ message: "ERROR: " + err.message})
     }
 })
 
