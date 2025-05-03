@@ -53,8 +53,8 @@ authRouter.post("/signup", async (req, res) => {
               const token = await existingUser.getJWT()
   
               res.cookie("token", token, {expires: new Date(Date.now() + 8 * 3600000)});
-  
-              res.send("Login Successful");
+              
+              res.send(existingUser);
           
           } else{
               throw new Error("Invalid Creds!")
