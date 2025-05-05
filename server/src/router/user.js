@@ -4,7 +4,7 @@ const User = require("../models/user");
 const { userAuth } = require("../middleware/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 
-const USER_SAFE_STRING = "firstName lastName photoUrl age gender";
+const USER_SAFE_STRING = "firstName lastName photoUrl age gender about skills email ";
 
 // GET - All Users data
 userRouter.get("/user/connections", userAuth, async (req, res) => {
@@ -91,7 +91,11 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
     .skip(skip)
     .limit(limit);
 
+   
+    
+
     res.send(user);
+    
   } catch (err) {
     res.status(400).send("ERROR: ", err.mssage);
   }

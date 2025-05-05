@@ -26,7 +26,6 @@ profileRouter.delete("/profile/remove", userAuth, async (req, res) => {
 
   try {
     const user = await User.findByIdAndDelete(userId);
-    console.log(user);
 
     res.send("User deleted successfully!");
   } catch (err) {

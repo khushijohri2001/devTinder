@@ -18,7 +18,7 @@ const userAuth = async (req, res, next) => {
     const {token} = req.cookies;
 
     if(!token){
-        throw new Error("Invalid token");
+        res.status(401).send("Please Login");
     }
 
     //Decrypt token

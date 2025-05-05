@@ -41,18 +41,20 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: {
-            values: ["male", "female", "others"],
+            values: ["Male", "Female", "Others"],
             message: `{VALUE} is incorrect status type`
         }
     },
     about: {
         type: String,
+        default: "I'm a Star Tribe User"
     },
     skills: {
         type: [String],
     },
     photoUrl: {
-        type: String
+        type: String,
+        default: "https://i.pinimg.com/1200x/c6/d4/75/c6d475abff5051946f1402ee1b2cf6fb.jpg"
     }
 }, {timestamps: true});
 

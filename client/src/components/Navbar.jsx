@@ -1,29 +1,35 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { removeUser } from "../redux/userSlice";
-import {axios} from "axios";
+import axios from "axios";
 import {BASE_URL} from "../redux/constants"
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { user } = useSelector((store) => store);
-  const dispatch = useDispatch()
+  const {firstName, photoUrl} = user ?? "";
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const logoutHandler = async () => {
    try {
     await axios.post( BASE_URL+ "/logout", {}, {
       withCredentials: true
      })
-     dispatch(removeUser())
+     dispatch(removeUser());
+     navigate("/login")
    } catch (error) {
     console.error(error.message);
     
    }
   }
+  
 
   return (
     <div className="navbar bg-base-300 shadow-sm">
       <div className="flex-1">
-        <a className="btn btn-ghost text-xl">Star Tribe</a>
+       <Link to="/"><p className="btn btn-ghost text-xl">Star Tribe</p></Link>
       </div>
 
       <div className="flex-none">
@@ -31,7 +37,7 @@ const Navbar = () => {
           <div className="dropdown dropdown-end ">
             <div className="flex items-center gap-4">
 
-              <p>Welcome, {user.firstName}</p>
+              <p>Welcome, {firstName}</p>
               <div
                 tabIndex={0}
                 role="button"
@@ -39,8 +45,8 @@ const Navbar = () => {
               >
                 <div className="w-10 rounded-full">
                   <img
-                    alt="Tailwind CSS Navbar component"
-                    src={user.photoUrl}
+                    alt={firstName}
+                    src={photoUrl}
                   />
                 </div>
               </div>

@@ -3,6 +3,7 @@ import axios from "axios";
 import { addUser } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { BASE_URL } from "../redux/constants";
+import { useNavigate } from "react-router-dom";
 
 const defaultCredentials = {
   email: "",
@@ -17,6 +18,7 @@ const guestCredentials = {
 const Login = () => {
   const [formData, setFormData] = useState(defaultCredentials);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
@@ -38,6 +40,7 @@ const Login = () => {
 
       dispatch(addUser(res.data));
       setFormData(defaultCredentials);
+      navigate("/")
     } catch (error) {
       console.error(error);
     }
