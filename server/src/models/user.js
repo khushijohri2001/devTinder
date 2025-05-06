@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
-        minLength: 4
     },
     lastName: {
         type: String
@@ -51,6 +50,11 @@ const userSchema = new mongoose.Schema({
     },
     skills: {
         type: [String],
+        validate(value){
+            if(value.length > 10){
+                throw new Error("You can enter only up to 10 skills")
+            }
+        }
     },
     photoUrl: {
         type: String,

@@ -1,4 +1,7 @@
 import React from "react";
+import { trimmedAbout } from "../utils/helperFunctions.jsx";
+import { useDispatch } from "react-redux";
+import { profilePreviewToggle } from "../redux/profileSlice.js";
 
 const UserCard = ({
   firstName,
@@ -8,33 +11,35 @@ const UserCard = ({
   photoUrl,
   about,
   skills,
+  cardType,
 }) => {
-  const trimmedAbout = (str) => {
-    const strArr = str.split(" ");
+  const dispatch = useDispatch();
 
-    if (strArr.length > 15) {
-      about = strArr.slice(0, 15).join(" ") + "...";
-    }
-    return about;
+  const profilePreviewHandler = () => {
+    dispatch(profilePreviewToggle());
   };
 
   return (
-    <div className="card bg-base-200 w-96 shadow-sm">
+    <div className="card bg-base-200 w-96 shadow-sm max-h-[620px]">
       <div className="p-4 flex justify-between items-center">
         <h2 className="card-title text-xl">
           {firstName} {lastName}
           <div className="badge badge-secondary text-lg">{age}</div>
         </h2>
-        <p className="text-secondary font-semibold">{gender}</p>
+        {cardType === "profile" && (
+          <button className="btn btn-outline btn-secondary" onClick={profilePreviewHandler}>Preview <span className="text-2xl">⤬</span></button>
+
+        )}
       </div>
       <figure>
-        <img src={photoUrl} alt={`${firstName} ${lastName}`} />
+        <img src={photoUrl} alt={`${firstName} ${lastName}`} className="max-h-80 w-full object-cover" />
       </figure>
 
       <div className="card-body">
-        <p>{trimmedAbout(about)}</p>
+        <p className="text-secondary font-semibold capitalize">{gender}</p>
+        {about && <p className="mb-3">{trimmedAbout(about)}</p>}
         {skills.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-3 mb-6">
+          <div className="flex flex-wrap gap-2 mb-6">
             {skills.map((skill) => (
               <div className="badge badge-outline badge-secondary" key={skill}>
                 {skill}
@@ -42,10 +47,12 @@ const UserCard = ({
             ))}
           </div>
         )}
-        <div className="card-actions justify-between">
-        <button className="btn btn-error text-white">⛌ Ignore</button>
-        <button className="btn btn-success">Interested ✓</button>
-        </div>
+        {cardType === "feed" && (
+          <div className="card-actions justify-between">
+            <button className="btn btn-error text-white">⛌ Ignore</button>
+            <button className="btn btn-success">Interested ✓</button>
+          </div>
+        )}
       </div>
     </div>
   );

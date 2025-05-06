@@ -27,7 +27,7 @@ const Feed = () => {
     <div className='flex items-center justify-center h-screen'>
      {
       feed ? (
-        <UserCard {...feed[1]} />
+        <UserCard {...feed[1]} cardType="feed" />
       ) : (
         <div>Feed Empty!</div>
       )
