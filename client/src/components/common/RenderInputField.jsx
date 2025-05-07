@@ -1,5 +1,5 @@
  // -- Utility for rendering input fields --
- const RenderInputField = ({ label, name, value, handler,  type = "text"}) => {
+ const RenderInputField = ({ label, name, value, handler, disable, placeholder, type = "text"}) => {
     return (
       <div>
         <label className="label">{label}</label>
@@ -7,11 +7,12 @@
           type={type}
           name={name}
           value={value}
+          placeholder={placeholder}
           onChange={handler}
           className={`input w-full ${
-            name === "email" && "disabled:border disabled:border-gray-300"
+            disable && "disabled:border disabled:border-gray-300"
           }`}
-          disabled={name === "email"}
+          disabled={disable}
         />
       </div>
     );

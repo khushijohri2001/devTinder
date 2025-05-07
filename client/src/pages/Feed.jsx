@@ -12,7 +12,7 @@ const Feed = () => {
   const getFeed = async () => {
    try {
     const res = await axios.get(BASE_URL + "/user/feed", {withCredentials: true});
-    dispatch(addFeed(res.data))
+    dispatch(addFeed(res?.data))
     
    } catch (error) {
     console.error(error.message)
@@ -23,13 +23,13 @@ const Feed = () => {
     getFeed();
   }, [])
 
-  return (
+  return feed && (
     <div className='flex items-center justify-center h-screen'>
      {
-      feed ? (
-        <UserCard {...feed[1]} cardType="feed" />
+      feed.length > 0 ? (
+        <UserCard {...feed[0]} cardType="feed" />
       ) : (
-        <div>Feed Empty!</div>
+        <div>Sorry, no more Mystics available!</div>
       )
      }
     </div>

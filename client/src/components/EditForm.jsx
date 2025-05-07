@@ -140,6 +140,7 @@ const EditForm = ({ user }) => {
               name="email"
               value={email}
               type="email"
+              disable={true}
             />
 
             <div>

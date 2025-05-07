@@ -11,7 +11,7 @@ const validateSignupData = (req) => {
     throw new Error("Enter strong password");
   } else if (Number(age) < 18) {
     throw new Error("Age must be 18 or more");
-  } else if (!["male", "female", "others"].includes(gender)) {
+  } else if (!["Male", "Female", "Others"].includes(gender)) {
     throw new Error("Invalid Gender");
   } else {
     true;

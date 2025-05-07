@@ -68,8 +68,6 @@ requestRouter.post("/request/review/:status/:fromUserId", userAuth, async (req, 
 
         // from -> to connect request already existed with interested
         const existingConnectionRequest = await ConnectionRequest.findOne({fromUserId: fromUserId, toUserId: loggedInUser._id, status: "interested"});
-
-        console.log(existingConnectionRequest);
         
 
         if(!existingConnectionRequest){

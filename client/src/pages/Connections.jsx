@@ -3,7 +3,7 @@ import axios from "axios";
 import { BASE_URL } from "../redux/constants";
 import RenderListRow from "../components/common/RenderListRow";
 import { useDispatch, useSelector } from "react-redux";
-import { addConnections } from "../redux/connectionsSlice";
+import { addConnection } from "../redux/connectionsSlice";
 
 const Connections = () => {
   const connectionList = useSelector((store) => store.connections);
@@ -15,7 +15,7 @@ const Connections = () => {
         withCredentials: true,
       });
 
-      dispatch(addConnections(res?.data));
+      dispatch(addConnection(res?.data));
     } catch (error) {
       console.error(error.message);
     }
@@ -37,7 +37,7 @@ const Connections = () => {
             ))}
           </ul>
         ) : (
-          <p>No connections found</p>
+          <p>All connections cleared!</p>
         )}
       </div>
     </div>

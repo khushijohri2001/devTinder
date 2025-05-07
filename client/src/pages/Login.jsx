@@ -3,17 +3,18 @@ import axios from "axios";
 import { addUser } from "../redux/userSlice";
 import { useDispatch } from "react-redux";
 import { BASE_URL } from "../redux/constants";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import RenderInputField from "../components/common/RenderInputField";
 
 const defaultCredentials = {
   email: "",
   password: "",
-}
+};
 
 const guestCredentials = {
   email: "taylor@swift.com",
   password: "Taylor@1234",
-}
+};
 
 const Login = () => {
   const [formData, setFormData] = useState(defaultCredentials);
@@ -33,26 +34,26 @@ const Login = () => {
       const res = await axios.post(
         BASE_URL + "/login",
         {
-          ...credentials
+          ...credentials,
         },
         { withCredentials: true }
       );
 
       dispatch(addUser(res.data));
       setFormData(defaultCredentials);
-      navigate("/")
+      navigate("/");
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const onSubmitHandler = async (event) => {
-      event.preventDefault();
-      loginUserHandler(formData)
+    event.preventDefault();
+    loginUserHandler(formData);
   };
 
   const onSubmitGuestHandler = () => {
-    loginUserHandler(guestCredentials)
+    loginUserHandler(guestCredentials);
   };
 
   return (
@@ -62,29 +63,23 @@ const Login = () => {
           <h2 className="card-title justify-center text-2xl">Login</h2>
 
           <form className="flex flex-col gap-6 mt-8" onSubmit={onSubmitHandler}>
-            <div>
-              <label className="label">Email</label>
-              <input
-                type="email"
-                className="input"
-                placeholder="you@example.com"
-                name="email"
-                value={formData.email}
-                onChange={onChangeHandler}
-              />
-            </div>
+            <RenderInputField
+              label="Email"
+              name="email"
+              value={formData.email}
+              handler={onChangeHandler}
+              type="email"
+              placeholder="you@example.com"
+            />
 
-            <div>
-              <label className="label">Password</label>
-              <input
-                type="password"
-                className="input"
-                placeholder="Enter 6 character or more"
-                name="password"
-                value={formData.password}
-                onChange={onChangeHandler}
-              />
-            </div>
+            <RenderInputField
+              label="Password"
+              name="password"
+              value={formData.password}
+              handler={onChangeHandler}
+              type="password"
+              placeholder="Enter 6 character or more"
+            />
 
             <div className="card-actions justify-center mt-2">
               <button type="submit" className="btn btn-secondary w-full">
@@ -103,7 +98,7 @@ const Login = () => {
           </button>
 
           <p className="text-center my-4">
-            Create a new Account <a className="link link-secondary">Sign up</a>
+            Create a new Account <Link to="/signup" className="link link-secondary">Sign up</Link>
           </p>
         </div>
       </div>

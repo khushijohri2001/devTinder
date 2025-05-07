@@ -4,11 +4,14 @@ export const connectionsSlice = createSlice({
   name: "connections",
   initialState: null,
   reducers: {
-    addConnections: (state, action) => {
+    addConnection: (state, action) => {
       return action.payload;
     },
+    removeConnection: (state, action) => {
+      return state.filter((user) => user._id !== action.payload)
+    }
   },
 });
 
-export const { addConnections } = connectionsSlice.actions;
+export const { addConnection } = connectionsSlice.actions;
 export default connectionsSlice.reducer;

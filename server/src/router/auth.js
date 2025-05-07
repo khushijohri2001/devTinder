@@ -40,8 +40,15 @@ authRouter.post("/signup", async (req, res) => {
       photoUrl,
     });
 
-    await user.save();
-    res.send("User created!");
+    const savedUser = await user.save();
+
+    const token = await savedUser.getJWT();
+
+    res.cookie("token", token, {
+      expires: new Date(Date.now() + 8 * 3600000),
+    });
+
+    res.send({ message: "User created!", data: savedUser });
   } catch (err) {
     res.status(400).send({ message: err.message || "Something went wrong" });
   }
@@ -52,12 +59,11 @@ authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const {token} = req.cookies
+    const { token } = req.cookies;
 
-    if(token){
-      throw new Error("User is already Logged In. Logout first!")
+    if (token) {
+      throw new Error("User is already Logged In. Logout first!");
     }
-    
 
     // Validating data
     validateLoginData(req);
@@ -67,7 +73,6 @@ authRouter.post("/login", async (req, res) => {
     if (!existingUser) {
       throw new Error("User not found");
     }
-
 
     // Checking text password and hash password
     const isPasswordValid = await existingUser.passwordValidation(password);
