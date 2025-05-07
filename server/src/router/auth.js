@@ -52,6 +52,13 @@ authRouter.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    const {token} = req.cookies
+
+    if(token){
+      throw new Error("User is already Logged In. Logout first!")
+    }
+    
+
     // Validating data
     validateLoginData(req);
 
@@ -60,6 +67,7 @@ authRouter.post("/login", async (req, res) => {
     if (!existingUser) {
       throw new Error("User not found");
     }
+
 
     // Checking text password and hash password
     const isPasswordValid = await existingUser.passwordValidation(password);

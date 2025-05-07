@@ -26,7 +26,7 @@ const EditForm = ({ user }) => {
 
   const [newSkillInput, setNewSkillInput] = useState("");
   const [toggleSaveBtn, setToggleSaveBtn] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [showToast, setShowToast] = useState(null);
 
   // -- Handlers --
   const handlePreviewToggle = () => {
@@ -78,10 +78,10 @@ const EditForm = ({ user }) => {
 
       dispatch(addUser(res?.data?.data));
       setToggleSaveBtn(true);
-      setShowToast(true);
+      setShowToast("Profile Updated successfully!");
 
       setTimeout(() => {
-        setShowToast(false);
+        setShowToast(null);
       }, 3000);
     } catch (error) {
       console.error(error.message);
@@ -103,7 +103,7 @@ const EditForm = ({ user }) => {
         {showToast && (
           <div className="toast toast-top toast-center mt-6 z-50">
             <div className="alert alert-success">
-              <span>Profile Updated successfully.</span>
+              <span>{showToast}</span>
             </div>
           </div>
         )}

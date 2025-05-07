@@ -13,6 +13,7 @@ const ProtectedRoutes = ({ path, children }) => {
 
   const fetchUser = async () => {
     if (user) {
+      // Redirect logged-in users away from login page
       if (path === "/login") {
         navigate("/");
       }
@@ -20,22 +21,27 @@ const ProtectedRoutes = ({ path, children }) => {
     }
 
     try {
-      const res = await axios.get(BASE_URL + "/profile/view", {
+      const response = await axios.get(BASE_URL + "/profile/view", {
         withCredentials: true,
       });
-      dispatch(addUser(res?.data?.user));
+
+      const loggedInUser = response?.data?.user;
+
+      dispatch(addUser(loggedInUser));
       navigate(path);
     } catch (error) {
-      if (error.status === 401) {
+      // Redirect to login if not authorized
+      if (error?.response?.status === 401) {
         navigate("/login");
+      } else {
+        console.error("Failed to fetch user:", error.message);
       }
-      console.error(error.message);
     }
   };
 
   useEffect(() => {
     fetchUser();
-  }, [user]);
+  }, [user, path]);
 
   return <>{children}</>;
 };

@@ -5,6 +5,8 @@ import Signup from '../pages/Signup';
 import App from '../App';
 import ProtectedRoutes from './ProtectedRoutes';
 import EditProfile from '../pages/EditProfile';
+import Connections from '../pages/Connections';
+import PendingRequests from '../pages/PendingRequests';
 
 export const AllRoutes = createBrowserRouter([
     {
@@ -26,6 +28,14 @@ export const AllRoutes = createBrowserRouter([
             {
                 path: "/profile",
                 element: <ProtectedRoutes path="/profile"><EditProfile/></ProtectedRoutes>
+            },
+            {
+                path: "/connections",
+                element: <ProtectedRoutes path="/connections"><Connections/></ProtectedRoutes>
+            },
+            {
+                path: "/pending-requests",
+                element: <ProtectedRoutes path="/pending-requests"><PendingRequests/></ProtectedRoutes>
             },
         ]
     }
