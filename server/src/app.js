@@ -9,14 +9,14 @@ const app = express();
 
 // CORS middleware
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "http://13.60.245.4",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
   credentials: true
 }));
 
 // Handle preflight OPTIONS explicitly
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "http://13.60.245.4",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true
 }));
