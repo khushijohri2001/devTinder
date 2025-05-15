@@ -1,8 +1,8 @@
-require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
+require("dotenv").config();
 
 const { connectDB } = require("./config/database");
 
@@ -10,31 +10,31 @@ const { connectDB } = require("./config/database");
 const app = express();
 
 // CORS middleware
-app.use(cors({
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
-  credentials: true
-}));
-
-// Handle preflight OPTIONS explicitly
-app.use(cors({
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  credentials: true
-}));
-// // CORS middleware
 // app.use(cors({
-//   origin: "http://13.60.245.4",
+//   origin: "http://localhost:5173",
 //   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
 //   credentials: true
 // }));
 
 // // Handle preflight OPTIONS explicitly
 // app.use(cors({
-//   origin: "http://13.60.245.4",
+//   origin: "http://localhost:5173",
 //   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 //   credentials: true
 // }));
+// CORS middleware
+app.use(cors({
+  origin: "http://13.60.245.4",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
+  credentials: true
+}));
+
+// Handle preflight OPTIONS explicitly
+app.use(cors({
+  origin: "http://13.60.245.4",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(cookieParser());
