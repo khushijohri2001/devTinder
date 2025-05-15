@@ -8,6 +8,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 const Navbar = () => {
   const { user } = useSelector((store) => store);
   const { firstName, photoUrl } = user ?? "";
+  
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Navbar = () => {
       console.error(error.message);
     }
   };
+
 
   return (
     <div className="navbar bg-base-300 shadow-sm sticky top-0 z-40">

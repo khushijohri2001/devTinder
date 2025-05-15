@@ -22,7 +22,7 @@ const userAuth = async (req, res, next) => {
     }
 
     //Decrypt token
-    const decodedMessage = await jwt.verify(token, "DEVTINDER@2001");
+    const decodedMessage = await jwt.verify(token, process.env.JWT_SECRET);
 
     const {_id} = decodedMessage;
 

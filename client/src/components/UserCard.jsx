@@ -59,7 +59,7 @@ const UserCard = ({
       <div className="card-body">
         <p className="text-secondary font-semibold capitalize">{gender}</p>
         {about && <p className="mb-3">{trimmedAbout(about)}</p>}
-        {skills.length > 0 && (
+        {skills && skills.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-6">
             {skills.map((skill) => (
               <div className="badge badge-outline badge-secondary" key={skill}>

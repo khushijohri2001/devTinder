@@ -1,98 +1,117 @@
-const express = require('express');
+const express = require("express");
 const requestRouter = express.Router();
 
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
-const { userAuth} = require("../middleware/auth")
+const { userAuth } = require("../middleware/auth");
+const sendEmail = require("../utils/sendEmail.js");
 
-// For Sender - ME
-requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
-    try{
-        
-        const fromUserId = req.user._id; //loggedIn User
-        const {status, toUserId }= req.params
+// For Sender - ME to user
+requestRouter.post(
+  "/request/send/:status/:toUserId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const fromUserId = req.user._id; //loggedIn User
+      const { status, toUserId } = req.params;
 
-        //initially only these 2
-        const ALLOWED_ACCESS = ["interested", "ignored"];
-        if(!ALLOWED_ACCESS.includes(status)){
-            throw new Error("Invalid status")
-        }
+      //initially only these 2
+      const ALLOWED_ACCESS = ["interested", "ignored"];
+      if (!ALLOWED_ACCESS.includes(status)) {
+        throw new Error("Invalid status");
+      }
 
-        //send request to existing user
-        const existingUser = await User.findById({_id: toUserId});
+      //send request to existing user
+      const existingUser = await User.findById({ _id: toUserId });
 
-        if(!existingUser){
-            throw new Error("No user found")
-        }
+      if (!existingUser) {
+        throw new Error("No user found");
+      }
 
-        // unique request
-        const existingConnectionRequest = await ConnectionRequest.findOne({
-            $or:[
-                {fromUserId: fromUserId, toUserId: toUserId},
-                {fromUserId: toUserId, toUserId: fromUserId}
-            ]
-        })
+      // unique request
+      const existingConnectionRequest = await ConnectionRequest.findOne({
+        $or: [
+          { fromUserId: fromUserId, toUserId: toUserId },
+          { fromUserId: toUserId, toUserId: fromUserId },
+        ],
+      });
 
-        if(existingConnectionRequest){
-            throw new Error("Request Already Exists")
-        }
+      if (existingConnectionRequest) {
+        throw new Error("Request Already Exists");
+      }
 
-        const connectionRequest = new ConnectionRequest({
-            fromUserId,
-            toUserId,
-            status
-        });
+      const connectionRequest = new ConnectionRequest({
+        fromUserId,
+        toUserId,
+        status,
+      });
 
-        const data = await connectionRequest.save();
+      const data = await connectionRequest.save();
 
-        res.json({
-            message: "Connect Request Sent Successfully!",
-            data
-        })
-    } catch(err){
-        res.status(400).send("Error: "+ err.message)
+      // Sending email to the other user when I send connecton request
+      try {
+        const emailRes = await sendEmail.run(
+          `A new friend request from ${existingUser.firstName}`,
+          `Hello, I'm ${existingUser.firstName} ${existingUser.lastName}. I would like to share my mystical powers with you`
+        );
+      } catch (e) {
+        console.error("Email failed to send", e);
+      }
+
+      res.json({
+        message: "Connect Request Sent Successfully!",
+        data,
+      });
+    } catch (err) {
+      res.status(400).send("Error: " + err.message);
     }
-})
+  }
+);
 
-// For Reciever - Elon, or connection request coming to ME
-requestRouter.post("/request/review/:status/:fromUserId", userAuth, async (req, res) => {
-    try{
-        const loggedInUser = req.user; // loggedIn User, toUserId
-        const {status, fromUserId} = req.params; //coming from url
-    
-        // status can be accepted, rejected only
-        const ALLOWED_ACCESS = ["accepted", "rejected"];
-        if(!ALLOWED_ACCESS.includes(status)){
-            throw new Error("Invalid Status")
-        }
+// For Reciever - Elon to me, or connection request coming to ME
+requestRouter.post(
+  "/request/review/:status/:fromUserId",
+  userAuth,
+  async (req, res) => {
+    try {
+      const loggedInUser = req.user; // loggedIn User, toUserId
+      const { status, fromUserId } = req.params; //coming from url
 
-        // from -> to connect request already existed with interested
-        const existingConnectionRequest = await ConnectionRequest.findOne({fromUserId: fromUserId, toUserId: loggedInUser._id, status: "interested"});
-        
+      // status can be accepted, rejected only
+      const ALLOWED_ACCESS = ["accepted", "rejected"];
+      if (!ALLOWED_ACCESS.includes(status)) {
+        throw new Error("Invalid Status");
+      }
 
-        if(!existingConnectionRequest){
-           return res.status(404).send("Connection Request not found")
-        }
+      // from -> to connect request already existed with interested
+      const existingConnectionRequest = await ConnectionRequest.findOne({
+        fromUserId: fromUserId,
+        toUserId: loggedInUser._id,
+        status: "interested",
+      });
 
-        // in connected request toUserId must be the current logged in user
-        if(!existingConnectionRequest.toUserId.equals(loggedInUser._id)){
-            throw new Error("Invalid user")
-        }
+      if (!existingConnectionRequest) {
+        return res.status(404).send("Connection Request not found");
+      }
 
-        // update status
-        existingConnectionRequest.status = status;
+      // in connected request toUserId must be the current logged in user
+      if (!existingConnectionRequest.toUserId.equals(loggedInUser._id)) {
+        throw new Error("Invalid user");
+      }
 
-        const data = await existingConnectionRequest.save()
+      // update status
+      existingConnectionRequest.status = status;
 
-        res.json({
-            message: "Connection "+ status ,
-            data
-        })
-        
+      const data = await existingConnectionRequest.save();
 
-    } catch(err){
-        res.status(400).send({ message: "ERROR: " + err.message})
+      res.json({
+        message: "Connection " + status,
+        data,
+      });
+    } catch (err) {
+      res.status(400).send({ message: "ERROR: " + err.message });
     }
-})
+  }
+);
 
 module.exports = requestRouter;

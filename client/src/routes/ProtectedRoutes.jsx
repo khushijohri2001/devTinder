@@ -11,6 +11,7 @@ const ProtectedRoutes = ({ path, children }) => {
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
 
+
   const fetchUser = async () => {
     // If user exists and tries to access login/signup, redirect to home
     
@@ -26,6 +27,10 @@ const ProtectedRoutes = ({ path, children }) => {
 
     // If user already exists and is not on auth route, no need to fetch again
     if (user) return;
+
+    if(user === null || user === undefined) {
+      navigate("/login")
+    }
 
     try {
       const response = await axios.get(BASE_URL + "/profile/view", {
@@ -54,6 +59,7 @@ const ProtectedRoutes = ({ path, children }) => {
 
   useEffect(() => {
       fetchUser();
+      
   }, [user, path]);
 
   return <>{children}</>;
