@@ -12,6 +12,7 @@ import PrivacyPolicy from '../pages/PrivacyPolicy';
 import TermsConditions from '../pages/TermsConditions';
 import CancellationRefund from '../pages/CancellationRefund';
 import ShippingDelivery from '../pages/ShippingDelivery';
+import ContactUs from '../pages/ContactUs';
 
 export const AllRoutes = createBrowserRouter([
     {
@@ -57,6 +58,10 @@ export const AllRoutes = createBrowserRouter([
             {
                 path: "/shipping-delivery",
                 element: <ShippingDelivery/>
+            },
+            {
+                path: "/privacy-policy",
+                element: <PrivacyPolicy/>
             },
             {
                 path: "/contact-us",
