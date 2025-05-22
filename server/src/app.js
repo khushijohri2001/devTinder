@@ -30,11 +30,11 @@ app.use(cors({
 }));
 
 // Handle preflight OPTIONS explicitly
-app.use(cors({
-  origin: "http://13.234.75.11",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  credentials: true
-}));
+// app.use(cors({
+//   origin: "http://13.234.75.11",
+//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+//   credentials: true
+// }));
 
 app.use(express.json());
 app.use(cookieParser());
