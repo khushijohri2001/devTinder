@@ -74,6 +74,11 @@ const Navbar = () => {
                   Pending Requests
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/upgrade-plans">
+                  Upgrade Plans
+                </NavLink>
+              </li>
               <li onClick={logoutHandler}>
                 <p>Logout</p>
               </li>

@@ -26,10 +26,10 @@ const Connections = () => {
   }, []);
 
   return connectionList && (
-    <div className="py-10">
-      <h2 className="text-3xl text-center"> My Connections</h2>
+    <div className="py-10 flex flex-col items-center gap-8">
+      <h2 className="text-3xl font-bold"> My Connections</h2>
 
-      <div className="w-1/2 mx-auto my-8">
+      <div className="w-1/2">
         {connectionList.length > 0 ? (
           <ul className="list bg-base-100 rounded-box shadow-md">
             {connectionList.map((user) => (

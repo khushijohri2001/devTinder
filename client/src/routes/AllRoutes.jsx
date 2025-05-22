@@ -7,6 +7,11 @@ import ProtectedRoutes from './ProtectedRoutes';
 import EditProfile from '../pages/EditProfile';
 import Connections from '../pages/Connections';
 import PendingRequests from '../pages/PendingRequests';
+import UpgradePlans from '../pages/UpgradePlans';
+import PrivacyPolicy from '../pages/PrivacyPolicy';
+import TermsConditions from '../pages/TermsConditions';
+import CancellationRefund from '../pages/CancellationRefund';
+import ShippingDelivery from '../pages/ShippingDelivery';
 
 export const AllRoutes = createBrowserRouter([
     {
@@ -40,6 +45,22 @@ export const AllRoutes = createBrowserRouter([
             {
                 path: "/upgrade-plans",
                 element: <ProtectedRoutes path="/upgrade-plans"><UpgradePlans/></ProtectedRoutes>
+            },
+            {
+                path: "/terms-conditions",
+                element: <TermsConditions/>
+            },
+            {
+                path: "/cancellation-refund",
+                element: <CancellationRefund/>
+            },
+            {
+                path: "/shipping-delivery",
+                element: <ShippingDelivery/>
+            },
+            {
+                path: "/contact-us",
+                element: <ContactUs/>
             },
         ]
     }

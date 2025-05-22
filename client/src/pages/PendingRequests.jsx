@@ -50,7 +50,7 @@ const PendingRequests = () => {
 
   return (
     requestList && (
-      <div className="py-10">
+      <div className="py-10 flex flex-col items-center gap-8">
          {/* Toast Alert */}
          {showToast && (
           <div className="toast toast-top toast-center mt-6 z-50">
@@ -60,9 +60,9 @@ const PendingRequests = () => {
           </div>
         )}
 
-        <h2 className="text-3xl text-center"> Pending Connection Requests</h2>
+        <h2 className="text-3xl font-bold"> Pending Connection Requests</h2>
 
-        <div className="w-1/2 mx-auto my-8">
+        <div className="w-1/2">
           {requestList.length > 0 ? (
             <ul className="list bg-base-100 rounded-box shadow-md">
               <li className="p-4 pb-2 text-xs opacity-60 tracking-wide">
