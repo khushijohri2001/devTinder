@@ -9,32 +9,21 @@ const { connectDB } = require("./config/database");
 
 const app = express();
 
-// CORS middleware
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
-//   credentials: true
-// }));
+const allowedOrigins = ["http://localhost:5173", "http://13.234.75.11"];
 
-// // Handle preflight OPTIONS explicitly
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-//   credentials: true
-// }));
-// CORS middleware
-app.use(cors({
-  origin: "http://13.234.75.11",
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
-  credentials: true
-}));
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
 
-// Handle preflight OPTIONS explicitly
-// app.use(cors({
-//   origin: "http://13.234.75.11",
-//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-//   credentials: true
-// }));
+app.use(cors(corsOptions));
+
 
 app.use(express.json());
 app.use(cookieParser());

@@ -37,6 +37,10 @@ export const AllRoutes = createBrowserRouter([
                 path: "/pending-requests",
                 element: <ProtectedRoutes path="/pending-requests"><PendingRequests/></ProtectedRoutes>
             },
+            {
+                path: "/upgrade-plans",
+                element: <ProtectedRoutes path="/upgrade-plans"><UpgradePlans/></ProtectedRoutes>
+            },
         ]
     }
 ])
