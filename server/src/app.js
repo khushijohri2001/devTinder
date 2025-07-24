@@ -34,7 +34,8 @@ const userRouter = require("./router/user.js");
 const requestRouter = require("./router/request.js")
 
 app.get("/test", (req, res) => {
-  res.send("This is working")
+  console.log("hi test here")
+  res.send("This is working!")
 })
 app.use("/", authRouter)
 app.use("/", profileRouter)
