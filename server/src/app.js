@@ -9,7 +9,7 @@ const { connectDB } = require("./config/database");
 
 const app = express();
 
-const allowedOrigins = ["http://localhost:5173", "http://13.234.75.11"];
+const allowedOrigins = ["http://localhost:5173", "http://13.234.75.11", "https://startribe.site", "https://www.startribe.site" ];
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -21,6 +21,8 @@ const corsOptions = {
   },
   credentials: true,
 };
+
+app.options('*', cors(corsOptions));
 
 app.use(cors(corsOptions));
 
