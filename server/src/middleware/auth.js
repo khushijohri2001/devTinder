@@ -22,7 +22,7 @@ const userAuth = async (req, res, next) => {
     }
 
     //Decrypt token
-    const decodedMessage = await jwt.verify(token, process.env.JWT_SECRET);
+    const decodedMessage = jwt.verify(token, process.env.JWT_SECRET);
 
     const {_id} = decodedMessage;
 
@@ -36,11 +36,8 @@ const userAuth = async (req, res, next) => {
     req.user = user;
     next();
     } catch(err){
-       console.error("Auth Error:", err.message);
-
-    // Send error only if response not already sent
     if (!res.headersSent) {
-      res.status(401).send({ message: err.message || "Unauthorized" });
+     return res.status(401).send({ message: err.message || "Unauthorized" });
     }
     }
 }
