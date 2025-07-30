@@ -13,11 +13,10 @@ const allowedOrigins = ["http://localhost:5173", "http://13.234.75.11", "https:/
 
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log("Request Origin =>", origin);  // Add this line
     if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
@@ -40,7 +39,6 @@ app.get("/test", (req, res) => {
   console.log("hi test here")
   res.send("This is working!")
 })
-app.get
 app.use("/", authRouter)
 app.use("/", profileRouter)
 app.use("/", userRouter)
