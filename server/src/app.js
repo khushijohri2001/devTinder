@@ -39,6 +39,7 @@ app.get("/test", (req, res) => {
   console.log("hi test here")
   res.send("This is working!")
 })
+app.get
 app.use("/", authRouter)
 app.use("/", profileRouter)
 app.use("/", userRouter)
