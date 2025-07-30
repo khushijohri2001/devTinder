@@ -18,7 +18,7 @@ const userAuth = async (req, res, next) => {
     const {token} = req.cookies;
 
     if(!token){
-        res.status(401).send("Please Login");
+       return res.status(401).send("Please Login");
     }
 
     //Decrypt token
@@ -30,13 +30,18 @@ const userAuth = async (req, res, next) => {
     const user = await User.findById(_id);
 
     if(!user){
-        throw new Error("User does not Exist!")
+        return res.status(404).send("User does not exist");
     }
 
     req.user = user;
     next();
     } catch(err){
-        res.status(400).send({ message: err.message || "Something went wrong" });
+       console.error("Auth Error:", err.message);
+
+    // Send error only if response not already sent
+    if (!res.headersSent) {
+      res.status(401).send({ message: err.message || "Unauthorized" });
+    }
     }
 }
 
