@@ -50,7 +50,7 @@ const PendingRequests = () => {
 
   return (
     requestList && (
-      <div className="py-10 flex flex-col items-center gap-8">
+      <div className="py-10 flex flex-col items-center gap-8 h-screen">
          {/* Toast Alert */}
          {showToast && (
           <div className="toast toast-top toast-center mt-6 z-50">

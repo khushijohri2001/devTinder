@@ -1,38 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect } from "react";
 import { BASE_URL } from "../redux/constants.js";
-import { addUser } from "../redux/userSlice.js";
+import { addUser, removeUser } from "../redux/userSlice.js";
 
-const ProtectedRoutes = ({ path, children }) => {
+const ProtectedRoutes = ({ children, requireAuth }) => {
+  const [userLoading, setUserLoading] = useState(false);
+  const [authCheck, setAuthCheck] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useSelector((store) => store.user);
 
-
   const fetchUser = async () => {
-    // If user exists and tries to access login/signup, redirect to home
-    
-    if (user) {
-      if (path === "/login") {
-        navigate("/");
-      }
-      if (path === "/signup") {
-        navigate("/profile");
-      }
+    // User can access the route as already logged in
+    if (user && authCheck) {
+      setUserLoading(false);
       return;
     }
 
-    // If user already exists and is not on auth route, no need to fetch again
-    if (user) return;
-
-    if(user === null || user === undefined) {
-      navigate("/login")
-    }
-
     try {
+      setUserLoading(true);
+
+      // getting user from cookie and not redux
       const response = await axios.get(BASE_URL + "/profile/view", {
         withCredentials: true,
       });
@@ -41,28 +33,62 @@ const ProtectedRoutes = ({ path, children }) => {
 
       if (loggedInUser) {
         dispatch(addUser(loggedInUser));
-        navigate(path);
-      }
-    } catch (error) {
-      // Redirect to login if not authorized
-      if (error?.status === 401) {
-        if (path === "/login" || path === "/signup") {
-          navigate(path);
-        } else {
-          navigate("/login");
-        }
+        return loggedInUser;
+
       } else {
-        console.error("Failed to fetch user:", error.message);
+        dispatch(removeUser());
+        return null
       }
+
+    } catch (error) {
+      console.error("Failed to fetch user:", error.message);
+      dispatch(removeUser());
+
+    } finally {
+      setUserLoading(false);
+      setAuthCheck(true);
     }
   };
 
   useEffect(() => {
-      fetchUser();
-      
-  }, [user, path]);
+    const handleAuth = async () => {
+      const currentUser = await fetchUser();
 
-  return <>{children}</>;
+      if(requireAuth){
+        // Protected Route Logic: not logged-in so rediect them to login page
+
+        if(!currentUser){
+          navigate("/login", {
+          state: location,
+          replace: true,
+        });
+        } else{
+          // Public Route Login: Logged-in so take them to where they cam from or "/" by default if nothing was found
+
+          if(currentUser){
+            const redirectPath = location?.state?.from?.pathname || "/"
+            navigate(redirectPath, {
+              replace: true
+            })
+          }
+        }
+      }
+
+    }
+
+    handleAuth()
+    
+  }, []);
+
+  if (userLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  return <> {children} </>;
 };
 
 export default ProtectedRoutes;

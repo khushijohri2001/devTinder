@@ -44,7 +44,7 @@ const Signup = () => {
       setFormData(defaultCredentials);
       navigate("/profile", { replace: true });
     } catch (error) {
-      console.error(error);
+      console.error(error.response.data.message);
     }
   };
 
@@ -54,7 +54,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center h-screen">
       <div className="card bg-base-100 w-96 shadow-sm my-12">
         <div className="card-body">
           <h2 className="card-title justify-center text-2xl">Sign Up</h2>

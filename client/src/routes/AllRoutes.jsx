@@ -21,31 +21,31 @@ export const AllRoutes = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <ProtectedRoutes path="/"><Feed/></ProtectedRoutes>
+                element: <ProtectedRoutes requireAuth="true"><Feed/></ProtectedRoutes>
             },
             {
                 path: "/login",
-                element: <ProtectedRoutes path="/login"><Login/></ProtectedRoutes>
+                element: <ProtectedRoutes requireAuth="false"><Login/></ProtectedRoutes>
             },
             {
                 path: "/signup",
-                element: <ProtectedRoutes path="/signup"><Signup/></ProtectedRoutes>
+                element: <ProtectedRoutes requireAuth="false"><Signup/></ProtectedRoutes>
             },
             {
                 path: "/profile",
-                element: <ProtectedRoutes path="/profile"><EditProfile/></ProtectedRoutes>
+                element: <ProtectedRoutes requireAuth="true"><EditProfile/></ProtectedRoutes>
             },
             {
                 path: "/connections",
-                element: <ProtectedRoutes path="/connections"><Connections/></ProtectedRoutes>
+                element: <ProtectedRoutes requireAuth="true"><Connections/></ProtectedRoutes>
             },
             {
                 path: "/pending-requests",
-                element: <ProtectedRoutes path="/pending-requests"><PendingRequests/></ProtectedRoutes>
+                element: <ProtectedRoutes requireAuth="true"><PendingRequests/></ProtectedRoutes>
             },
             {
                 path: "/upgrade-plans",
-                element: <ProtectedRoutes path="/upgrade-plans"><UpgradePlans/></ProtectedRoutes>
+                element: <ProtectedRoutes requireAuth="true"><UpgradePlans/></ProtectedRoutes>
             },
             {
                 path: "/terms-conditions",

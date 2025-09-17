@@ -8,7 +8,7 @@ const EditProfile = () => {
   const { isProfilePreview, profileData } = useSelector((store) => store.profile);
 
   return (
-    <div className="flex justify-center items-start gap-8 my-6">
+    <div className="flex justify-center items-start gap-8 my-6 h-screen">
       <EditForm user={user} />
       {isProfilePreview &&  <UserCard {...profileData} cardType="profile" />}
     </div>

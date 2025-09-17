@@ -3,11 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 const profileSlice = createSlice({
     name:"profile",
     initialState: {
-        isProfilePreview: false,
+        isProfilePreview: true,
         profileData: null
     },
     reducers: {
-        profilePreviewToggle: (state, action) => {
+        profilePreviewToggle: (state) => {
             state.isProfilePreview = !state.isProfilePreview
         },
         updateProfile: (state, action) => {

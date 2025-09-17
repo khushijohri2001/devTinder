@@ -26,7 +26,7 @@ const Connections = () => {
   }, []);
 
   return connectionList && (
-    <div className="py-10 flex flex-col items-center gap-8">
+    <div className="py-10 flex flex-col items-center gap-8 h-screen">
       <h2 className="text-3xl font-bold"> My Connections</h2>
 
       <div className="w-1/2">
