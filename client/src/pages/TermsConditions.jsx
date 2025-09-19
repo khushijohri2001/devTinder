@@ -2,7 +2,7 @@ import React from "react";
 
 const TermsConditions = () => {
   return (
-    <div className="flex flex-col items-center gap-8 py-24 h-screen">
+    <div className="flex flex-col items-center gap-8 my-24 h-screen">
       <h2 className="text-3xl">Terms and Conditions</h2>
       <div className="w-1/2 flex flex-col gap-4">
         <p className="text-xl">Effective Date: March 12, 2025</p>
