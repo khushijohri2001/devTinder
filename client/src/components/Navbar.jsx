@@ -42,7 +42,7 @@ const Navbar = () => {
         {user ? (
           <div className="dropdown dropdown-end ">
             <div className="flex items-center gap-4">
-              <p>Welcome, {firstName}</p>
+              <p>Hey, Welcome {firstName}!</p>
               <div
                 tabIndex={0}
                 role="button"
