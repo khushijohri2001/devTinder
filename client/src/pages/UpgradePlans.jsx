@@ -1,11 +1,59 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { checkSvg } from "../assets/svgs";
+import { BASE_URL } from "../redux/constants";
+import axios from "axios";
 
 const UpgradePlans = () => {
-  return (
+  const [isUserPremium, setIsUserPremium] = useState(false);
+
+  useEffect(() => {
+    handleVerifyPremium();
+  }, []);
+
+  const handleVerifyPremium = async () => {
+    const response = await axios.get(BASE_URL + "/premium/verify", {
+      withCredentials: true,
+    });
+
+    if (response.data.isPremium) {
+      setIsUserPremium(true);
+    }
+  };
+
+  const handleBuyNow = async (type) => {
+    const order = await axios.post(
+      BASE_URL + "/payment/create",
+      { membershipType: type },
+      { withCredentials: true }
+    );
+
+    const { keyId, amount, currency, notes, orderId } = order.data;
+
+    const options = {
+      key: keyId,
+      amount,
+      currency,
+      name: "Star Tribe",
+      description: "Meet your mystical friend",
+      order_id: orderId,
+      prefill: {
+        name: notes.firstName + " " + notes.lastName,
+        email: notes.email,
+      },
+      theme: {
+        color: "#F37254",
+      },
+      handler: handleVerifyPremium,
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+  return isUserPremium ? (
+    <p>You're already a Premium User</p>
+  ) : (
     <div className="py-10 flex flex-col items-center gap-8 h-screen">
       <h2 className="text-3xl font-bold">Upgrade Plans</h2>
-
 
       <div className="stats mx-auto">
         <div className="border-base-300 border rounded-2xl w-[340px]">
@@ -18,9 +66,12 @@ const UpgradePlans = () => {
             <div className="stat-value mt-8">
               <span className="text-xl">₹</span>200
             </div>
-            <div className="stat-title">per month</div>
+            <div className="stat-title">/ month</div>
             <div className="stat-actions">
-              <button className="btn btn-sm btn-secondary w-full mt-4">
+              <button
+                className="btn btn-sm btn-secondary w-full mt-4"
+                onClick={() => handleBuyNow("monthly")}
+              >
                 Buy Now
               </button>
             </div>
@@ -72,7 +123,10 @@ const UpgradePlans = () => {
             </div>
             <div className="stat-title">one-time</div>
             <div className="stat-actions">
-              <button className="btn btn-sm btn-secondary w-full mt-4">
+              <button
+                className="btn btn-sm btn-secondary w-full mt-4"
+                onClick={() => handleBuyNow("oneTime")}
+              >
                 Buy Now
               </button>
             </div>

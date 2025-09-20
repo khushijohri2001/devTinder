@@ -7,7 +7,7 @@ export const trimmedAbout = (str) => {
     return str;
   };
 
-  export const capitalize = (str) => {
+export const capitalize = (str) => {
     const capLetter = str[0].toUpperCase();
     const restLetters = str.slice(1)
     return capLetter + restLetters
