@@ -58,10 +58,27 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 
     //Update my payment status in DB
     const paymentDetails = req.body.payload.payment.entity; //getting updated data
-    const payment = await payment.findOne({ orderId: paymentDetails.order_id }); //getting existing data to update
+    const payment = await Payment.findOne({ orderId: paymentDetails.order_id }); //getting existing data to update
 
     payment.status = paymentDetails.status;
+
     await payment.save();
+
+    const user = await User.findOne({ _id: payment.userId});
+    user.isPremium = true;
+    user.membershipType = payment.notes.membershipType;
+
+    await user.save();
+
+    //Update the user as premium
+    // if(req.body.event === payment.captured){
+        
+    // }
+    // if(req.body.event === payment.failed){
+
+    // }
+
+    return res.status(200).son(msg: "Webhook successfully recieved")
   } catch (error) {
     res.status(400).send("Something went wrong" + err);
   }

@@ -11,14 +11,19 @@ const UpgradePlans = () => {
   }, []);
 
   const handleVerifyPremium = async () => {
-    const response = await axios.get(BASE_URL + "/premium/verify", {
+    try {
+     const response = await axios.get(BASE_URL + "/premium/verify", {
       withCredentials: true,
     });
 
     if (response.data.isPremium) {
       setIsUserPremium(true);
     }
-  };
+    
+   } catch (error) {
+    console.error(error.message)
+   }
+  }
 
   const handleBuyNow = async (type) => {
     const order = await axios.post(
@@ -49,6 +54,8 @@ const UpgradePlans = () => {
     const rzp = new window.Razorpay(options);
     rzp.open();
   };
+
+
   return isUserPremium ? (
     <p>You're already a Premium User</p>
   ) : (
@@ -169,6 +176,7 @@ const UpgradePlans = () => {
       </div>
     </div>
   );
+
 };
 
 export default UpgradePlans;

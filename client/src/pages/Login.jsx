@@ -31,9 +31,6 @@ const Login = () => {
 
   const loginUserHandler = async (credentials) => {
     try {
-      console.log("I'm in Login page");
-      console.log("new")
-      
       const res = await axios.post(
         BASE_URL + "/login",
         {
