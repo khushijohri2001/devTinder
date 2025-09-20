@@ -3,81 +3,94 @@ const validator = require("validator");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     firstName: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     lastName: {
-        type: String
+      type: String,
     },
     age: {
-        type: Number,
-        required: true,
-        min: 18
+      type: Number,
+      required: true,
+      min: 18,
     },
     email: {
-        type: String,
-        required: true,
-        lowercase: true,
-        unique: true,
-        validate(value){
-            if(!validator.isEmail(value)){
-                throw new Error("Invalid email address: " + value)
-            }
+      type: String,
+      required: true,
+      lowercase: true,
+      unique: true,
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("Invalid email address: " + value);
         }
+      },
     },
     password: {
-        type: String,
-        required: true,
-        validate(value){
-            if(!validator.isStrongPassword(value)){
-                throw new Error("Invalid password: " + value)
-            }
+      type: String,
+      required: true,
+      validate(value) {
+        if (!validator.isStrongPassword(value)) {
+          throw new Error("Invalid password: " + value);
         }
+      },
     },
     gender: {
-        type: String,
-        required: true,
-        enum: {
-            values: ["Male", "Female", "Others"],
-            message: `{VALUE} is incorrect status type`
-        }
+      type: String,
+      required: true,
+      enum: {
+        values: ["Male", "Female", "Others"],
+        message: `{VALUE} is incorrect status type`,
+      },
     },
     about: {
-        type: String,
-        default: "I'm a Star Tribe User"
+      type: String,
+      default: "I'm a Star Tribe User",
     },
     skills: {
-        type: [String],
-        validate(value){
-            if(value.length > 10){
-                throw new Error("You can enter only up to 10 skills")
-            }
+      type: [String],
+      validate(value) {
+        if (value.length > 10) {
+          throw new Error("You can enter only up to 10 skills");
         }
+      },
     },
     photoUrl: {
-        type: String,
-        default: "https://i.pinimg.com/1200x/c6/d4/75/c6d475abff5051946f1402ee1b2cf6fb.jpg"
-    }
-}, {timestamps: true});
+      type: String,
+      default:
+        "https://i.pinimg.com/1200x/c6/d4/75/c6d475abff5051946f1402ee1b2cf6fb.jpg",
+    },
+    membershipType: {
+      type: String,
+    },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
 
-userSchema.methods.getJWT = async function(){
-    const user = this;
-    const token = await jwt.sign({_id: user._id}, "DEVTINDER@2001", {expiresIn: "1d"});
+userSchema.methods.getJWT = async function () {
+  const user = this;
+  const token = await jwt.sign({ _id: user._id }, "DEVTINDER@2001", {
+    expiresIn: "1d",
+  });
 
-    return token;
-}
+  return token;
+};
 
-userSchema.methods.passwordValidation = async function(passwordInput){
-    const user = this;
-    const hashedPassword = user.password;
+userSchema.methods.passwordValidation = async function (passwordInput) {
+  const user = this;
+  const hashedPassword = user.password;
 
-    const isPasswordValid = await bcrypt.compare(passwordInput, hashedPassword);
+  const isPasswordValid = await bcrypt.compare(passwordInput, hashedPassword);
 
-    return isPasswordValid;
-}
+  return isPasswordValid;
+};
 
-const User = new mongoose.model('User', userSchema);
+const User = new mongoose.model("User", userSchema);
 
-module.exports = User
+module.exports = User;
