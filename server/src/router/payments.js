@@ -8,6 +8,10 @@ const {
   validateWebhookSignature,
 } = require("razorpay/dist/utils/razorpay-utils.js");
 
+paymentRouter.get("/payment/test", (req, res) => {
+    res.send("payment recieved")
+})
+
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
   const { membershipType } = req.body;
   const { firstName, lastName, email } = req.user;
@@ -35,6 +39,8 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     });
 
     const savedPayments = await payment.save();
+    console.log(payment);
+    
 
     res.json({ ...savedPayments.toJSON(), keyId: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
@@ -78,6 +84,8 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     // if(req.body.event === payment.failed){
 
     // }
+    console.log(isWebhookValid);
+    
 
     return res.status(200).json({msg: "Webhook successfully recieved"})
   } catch (error) {
