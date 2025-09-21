@@ -5,9 +5,7 @@ const razorpayInstance = require("../utils/razorpay.js");
 const Payment = require("../models/payment.js");
 const User = require("../models/user.js");
 const { membershipAmount } = require("../utils/constants.js");
-const {
-  validateWebhookSignature,
-} = require("razorpay/dist/utils/razorpay-utils.js");
+const {validateWebhookSignature} = require("razorpay/dist/utils/razorpay-utils.js");
 
 paymentRouter.get("/payment/test", (req, res) => {
   res.send("payment recieved");
@@ -40,7 +38,6 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
     });
 
     const savedPayments = await payment.save();
-    console.log(payment);
 
     res.json({ ...savedPayments.toJSON(), keyId: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
@@ -49,33 +46,51 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 });
 
 paymentRouter.post("/payment/webhook", async (req, res) => {
+  console.log("Webhook hit:", req.body);
+
   try {
     const webhookSignature = req.get("X-Razorpay-Signature");
 
     const isWebhookValid = validateWebhookSignature(
       JSON.stringify(req.body),
       webhookSignature,
-      process.env.RAZORPAY_WEBHOOK_SECRET
+      // process.env.RAZORPAY_WEBHOOK_SECRET
+      process.env.NGROK_SECRET
     );
 
     if (!isWebhookValid) {
       return res.status(400).json({ msg: "Webhook signature is invalid" });
     }
 
+
+    // console.log("Webhook payload:", JSON.stringify(req.body, null, 2));
+
     //Update my payment status in DB
     const paymentDetails = req.body.payload.payment.entity; //getting updated data
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id }); //getting existing data to update
 
-    payment.status = paymentDetails.status;
 
+    if (!payment) return res.status(404).json({ msg: "Payment not found" });
+
+    
+    // Update payment status
+    payment.status = paymentDetails.status;
     await payment.save();
 
-    const user = await User.findOne({ _id: payment.userId });
-    user.isPremium = true;
-    user.membershipType = payment.notes.membershipType;
+    console.log(payment.userId)
 
+    const user = await User.findOne({ _id: payment.userId });
+    if (!user) return res.status(404).json({ msg: "User not found" });
+    
+    
+
+    // Use membershipType from DB payment.notes or fallback
+    user.isPremium = paymentDetails.status === "captured" || paymentDetails.status === "paid";
+    user.membershipType = payment.notes?.membershipType || "unknown";
+
+    // console.log("user: ",user);
     await user.save();
-    console.log(user);
+    
 
     //Update the user as premium
     // if(req.body.event === payment.captured){
@@ -84,7 +99,6 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     // if(req.body.event === payment.failed){
 
     // }
-    console.log(isWebhookValid);
 
     return res.status(200).json({ msg: "Webhook successfully recieved" });
   } catch (error) {
@@ -95,7 +109,6 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
 paymentRouter.get("/premium/verify", userAuth, async (req, res) => {
   try {
     const user = req.user;
-    console.log(req.user);
 
     if (user.isPremium) {
       return res.json({ isPremium: true });

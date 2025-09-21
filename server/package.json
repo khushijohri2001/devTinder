@@ -22,5 +22,8 @@
     "mongoose": "^8.13.2",
     "razorpay": "^2.9.6",
     "validator": "^13.15.0"
+  },
+  "devDependencies": {
+    "ngrok": "^5.0.0-beta.2"
   }
 }
