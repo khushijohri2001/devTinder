@@ -13,12 +13,15 @@ const UpgradePlans = () => {
   const handleVerifyPremium = async () => {
     try {
      const response = await axios.get(BASE_URL + "/premium/verify", {
-      withCredentials: true,
+      withCredentials: true
     });
 
     if (response.data.isPremium) {
       setIsUserPremium(true);
     }
+
+    console.log(response);
+    
     
    } catch (error) {
     console.error(error.message)

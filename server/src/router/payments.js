@@ -61,6 +61,7 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id }); //getting existing data to update
 
     payment.status = paymentDetails.status;
+    
 
     await payment.save();
 
@@ -84,14 +85,17 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
   }
 });
 
-paymentRouter.post("/premium/verify", userAuth, async (req, res) => {
+paymentRouter.get("/premium/verify", userAuth, async (req, res) => {
   try {
-    const user = req.body;
+    const user = req.user;
+    console.log(req.user);
+    
 
     if (user.isPremium) {
       return res.json({ isPremium: true });
     }
     return res.json({ isPremium: false });
+
   } catch (error) {
     res.status(400).send("Something went wrong " + error);
   }
