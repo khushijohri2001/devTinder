@@ -2,17 +2,16 @@ const express = require("express");
 const paymentRouter = express.Router();
 const { userAuth } = require("../middleware/auth.js");
 const razorpayInstance = require("../utils/razorpay.js");
-const Payment = require("../models/payments.js");
+const Payment = require("../models/payment.js");
 const User = require("../models/user.js");
 const { membershipAmount } = require("../utils/constants.js");
 const {
   validateWebhookSignature,
 } = require("razorpay/dist/utils/razorpay-utils.js");
 
-
-paymentRouter.get("/test", (req, res) => {
-    res.send("payment recieved")
-})
+paymentRouter.get("/payment/test", (req, res) => {
+  res.send("payment recieved");
+});
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
   const { membershipType } = req.body;
@@ -42,7 +41,6 @@ paymentRouter.post("/payment/create", userAuth, async (req, res) => {
 
     const savedPayments = await payment.save();
     console.log(payment);
-    
 
     res.json({ ...savedPayments.toJSON(), keyId: process.env.RAZORPAY_KEY_ID });
   } catch (err) {
@@ -69,29 +67,26 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     const payment = await Payment.findOne({ orderId: paymentDetails.order_id }); //getting existing data to update
 
     payment.status = paymentDetails.status;
-    
 
     await payment.save();
 
-    const user = await User.findOne({ _id: payment.userId});
+    const user = await User.findOne({ _id: payment.userId });
     user.isPremium = true;
     user.membershipType = payment.notes.membershipType;
 
     await user.save();
     console.log(user);
-    
 
     //Update the user as premium
     // if(req.body.event === payment.captured){
-        
+
     // }
     // if(req.body.event === payment.failed){
 
     // }
     console.log(isWebhookValid);
-    
 
-    return res.status(200).json({msg: "Webhook successfully recieved"})
+    return res.status(200).json({ msg: "Webhook successfully recieved" });
   } catch (error) {
     res.status(400).send("Something went wrong" + err);
   }
@@ -101,13 +96,11 @@ paymentRouter.get("/premium/verify", userAuth, async (req, res) => {
   try {
     const user = req.user;
     console.log(req.user);
-    
 
     if (user.isPremium) {
       return res.json({ isPremium: true });
     }
     return res.json({ isPremium: false });
-
   } catch (error) {
     res.status(400).send("Something went wrong " + error);
   }

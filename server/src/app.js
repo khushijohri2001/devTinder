@@ -32,7 +32,7 @@ const authRouter = require("./router/auth.js")
 const profileRouter = require("./router/profile.js");
 const userRouter = require("./router/user.js");
 const requestRouter = require("./router/request.js");
-const paymentRouter = require("./router/payments.js");
+const paymentRouter = require("./router/payment.js");
 
 app.get("/test", (req, res) => {
   console.log("hi test here")
@@ -43,7 +43,7 @@ app.use("/", authRouter)
 app.use("/", profileRouter)
 app.use("/", userRouter)
 app.use("/", requestRouter)
-app.use("/api/payment", paymentRouter)
+app.use("/", paymentRouter)
 
 connectDB()
   .then(() => {
