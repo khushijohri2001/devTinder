@@ -3,10 +3,12 @@ const paymentRouter = express.Router();
 const { userAuth } = require("../middleware/auth.js");
 const razorpayInstance = require("../utils/razorpay.js");
 const Payment = require("../models/payments.js");
+const User = require("../models/user.js");
 const { membershipAmount } = require("../utils/constants.js");
 const {
   validateWebhookSignature,
 } = require("razorpay/dist/utils/razorpay-utils.js");
+
 
 paymentRouter.get("/test", (req, res) => {
     res.send("payment recieved")
@@ -76,6 +78,8 @@ paymentRouter.post("/payment/webhook", async (req, res) => {
     user.membershipType = payment.notes.membershipType;
 
     await user.save();
+    console.log(user);
+    
 
     //Update the user as premium
     // if(req.body.event === payment.captured){
