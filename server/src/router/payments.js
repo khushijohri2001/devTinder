@@ -8,7 +8,7 @@ const {
   validateWebhookSignature,
 } = require("razorpay/dist/utils/razorpay-utils.js");
 
-paymentRouter.get("/payment/test", (req, res) => {
+paymentRouter.get("/test", (req, res) => {
     res.send("payment recieved")
 })
 

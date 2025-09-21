@@ -23,8 +23,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// app.options('/api/*', cors(corsOptions));
-
 
 
 app.use(express.json());
@@ -40,11 +38,12 @@ app.get("/test", (req, res) => {
   console.log("hi test here")
   res.send("This is working!")
 })
+
 app.use("/", authRouter)
 app.use("/", profileRouter)
 app.use("/", userRouter)
 app.use("/", requestRouter)
-app.use("/", paymentRouter)
+app.use("/api/payment", paymentRouter)
 
 connectDB()
   .then(() => {
