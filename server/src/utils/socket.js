@@ -47,7 +47,9 @@ const initializeSocket = (server) => {
             photoUrl,
             text,
           });
-        } catch (error) {}
+        } catch (error) {
+            console.log(error)
+        }
       }
     );
 
