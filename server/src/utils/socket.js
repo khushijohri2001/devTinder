@@ -41,7 +41,7 @@ const initializeSocket = (server) => {
           await chat.save();
 
           io.to(roomId).emit("messageReceived", {
-            senderId,
+            senderId: userId,
             firstName,
             lastName,
             photoUrl,
