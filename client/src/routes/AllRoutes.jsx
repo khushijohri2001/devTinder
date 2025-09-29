@@ -13,6 +13,9 @@ import TermsConditions from '../pages/TermsConditions';
 import CancellationRefund from '../pages/CancellationRefund';
 import ShippingDelivery from '../pages/ShippingDelivery';
 import ContactUs from '../pages/ContactUs';
+import Chat from '../pages/Chat';
+import Inbox from '../pages/Inbox';
+import Profile from '../pages/Profile';
 
 export const AllRoutes = createBrowserRouter([
     {
@@ -32,7 +35,11 @@ export const AllRoutes = createBrowserRouter([
                 element: <ProtectedRoutes requireAuth="false"><Signup/></ProtectedRoutes>
             },
             {
-                path: "/profile",
+                path: "/profile/:targetUserId",
+                element: <ProtectedRoutes requireAuth="true"><Profile/></ProtectedRoutes>
+            },
+            {
+                path: "/edit-profile",
                 element: <ProtectedRoutes requireAuth="true"><EditProfile/></ProtectedRoutes>
             },
             {
@@ -46,6 +53,14 @@ export const AllRoutes = createBrowserRouter([
             {
                 path: "/upgrade-plans",
                 element: <ProtectedRoutes requireAuth="true"><UpgradePlans/></ProtectedRoutes>
+            },
+            {
+                path: "/inbox",
+                element: <ProtectedRoutes requireAuth="true"><Inbox/></ProtectedRoutes>
+            },
+            {
+                path: "/chat/:targetUserId",
+                element: <ProtectedRoutes requireAuth="true"><Chat/></ProtectedRoutes>
             },
             {
                 path: "/terms-conditions",

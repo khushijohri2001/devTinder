@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const RenderListRow = ({
   _id,
@@ -33,9 +34,10 @@ const RenderListRow = ({
       <p className="list-col-wrap text-xs w-[90%]">{about}</p>
 
       {listRowType === "connection" && (
-        <button className="btn btn-soft btn-secondary w-full">
+       <Link to={`/profile/${_id}`}> <button className="btn btn-soft btn-secondary w-full">
           Open Profile
         </button>
+        </Link>
       )}
 
       {listRowType === "request" && (

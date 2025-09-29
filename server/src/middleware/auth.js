@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
+//Timepass
 const adminAuth = (req, res, next) => {
     const token = "abcdefghijk";
     const isAdminAuthorized = token === token;

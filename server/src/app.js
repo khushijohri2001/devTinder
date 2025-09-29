@@ -1,10 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const http = require('http');
 
 require("dotenv").config();
 
 const { connectDB } = require("./config/database");
+const initializeSocket = require("./utils/socket.js");
 
 
 const app = express();
@@ -33,6 +35,7 @@ const profileRouter = require("./router/profile.js");
 const userRouter = require("./router/user.js");
 const requestRouter = require("./router/request.js");
 const paymentRouter = require("./router/payment.js");
+const chatRouter = require("./router/chat.js");
 
 app.get("/test", (req, res) => {
   console.log("hi test here")
@@ -44,12 +47,17 @@ app.use("/", profileRouter)
 app.use("/", userRouter)
 app.use("/", requestRouter)
 app.use("/", paymentRouter)
+app.use("/", chatRouter)
+
+const server = http.createServer(app);
+
+initializeSocket(server);
 
 connectDB()
   .then(() => {
     console.log("Database Connected!");
 
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log("Listening to port 7777");
     });
   })

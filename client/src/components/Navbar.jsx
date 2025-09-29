@@ -70,6 +70,11 @@ const Navbar = () => {
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/inbox">
+                  Inbox
+                </NavLink>
+              </li>
+              <li>
                 <NavLink to="/pending-requests">
                   Pending Requests
                 </NavLink>

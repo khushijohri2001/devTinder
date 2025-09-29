@@ -8,77 +8,68 @@ import { addUser, removeUser } from "../redux/userSlice.js";
 
 const ProtectedRoutes = ({ children, requireAuth }) => {
   const [userLoading, setUserLoading] = useState(false);
-  const [authCheck, setAuthCheck] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector((store) => store.user);
 
-  const fetchUser = async () => {
-    // User can access the route as already logged in
-    if (user && authCheck) {
-      setUserLoading(false);
-      return;
-    }
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setUserLoading(true);
+        
+        const response = await axios.get(BASE_URL + "/profile/view", {
+          withCredentials: true,
+        });
 
-    try {
-      setUserLoading(true);
+        const loggedInUser = response?.data?.user;
 
-      // getting user from cookie and not redux
-      const response = await axios.get(BASE_URL + "/profile/view", {
-        withCredentials: true,
-      });
+        if (loggedInUser) {
+          dispatch(addUser(loggedInUser));
+        } else {
+          dispatch(removeUser());
+        }
 
-      const loggedInUser = response?.data?.user;
-
-      if (loggedInUser) {
-        dispatch(addUser(loggedInUser));
         return loggedInUser;
-
-      } else {
+      } catch (error) {
+        console.error("Failed to fetch user:", error.message);
         dispatch(removeUser());
-        return null
+        return null;
+      } finally {
+        setUserLoading(false);
+        setAuthChecked(true);
+      }
+    };
+
+    const handleAuth = async () => {
+      // If we already have a user in Redux, skip API call
+      let currentUser = user;
+      
+      if (!authChecked) {
+        currentUser = await fetchUser();
       }
 
-    } catch (error) {
-      console.error("Failed to fetch user:", error.message);
-      dispatch(removeUser());
-
-    } finally {
-      setUserLoading(false);
-      setAuthCheck(true);
-    }
-  };
-
-  useEffect(() => {
-    const handleAuth = async () => {
-      const currentUser = await fetchUser();
-
-      if(requireAuth){
-        // Protected Route Logic: not logged-in so rediect them to login page
-
-        if(!currentUser){
-          navigate("/login", {
-          state: location,
+      if (requireAuth && !currentUser) {
+        // Protected route but user not authenticated - redirect to login
+        // Protected route + No user = Go to login
+        navigate("/login", {
+          state: { from: location },
           replace: true,
         });
-        } else{
-          // Public Route Login: Logged-in so take them to where they cam from or "/" by default if nothing was found
-
-          if(currentUser){
-            const redirectPath = location?.state?.from?.pathname || "/"
-            navigate(redirectPath, {
-              replace: true
-            })
-          }
-        }
+      } else if (!requireAuth && currentUser) {
+        // Public route but user is authenticated - redirect to intended page
+        // Public route (Login / Sign up) + Has user = Go to intended destination
+        const redirectPath = location?.state?.from?.pathname || "/";
+        navigate(redirectPath, {
+          replace: true,
+        });
       }
+    };
 
-    }
+    handleAuth();
+  }, [requireAuth, location.pathname]); // Only depend on requireAuth and pathname
 
-    handleAuth()
-    
-  }, []);
 
   if (userLoading) {
     return (

@@ -42,7 +42,7 @@ const Signup = () => {
 
       dispatch(addUser(res?.data?.data));
       setFormData(defaultCredentials);
-      navigate("/profile", { replace: true });
+      navigate("/edit-profile", { replace: true });
     } catch (error) {
       console.error(error.response.data.message);
     }
